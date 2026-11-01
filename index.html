@@ -1,0 +1,813 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HÓA HỌC 10 - ÔN TẬP KIỂM TRA GIỮA KÌ 1 (THPT PHẠM VĂN SÁNG - MÃ ĐỀ 609)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Tích hợp KaTeX để hiển thị công thức hóa học và toán học trong cặp $...$ chuẩn LaTeX -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&display=swap');
+        body { font-family: 'Montserrat', sans-serif; }
+        .pulse-glow { animation: pulseGlow 2s infinite; }
+        @keyframes pulseGlow {
+            0%, 100% { box-shadow: 0 0 15px rgba(59, 130, 246, 0.5); }
+            50% { box-shadow: 0 0 30px rgba(59, 130, 246, 0.8); }
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-indigo-900 via-purple-900 to-slate-900 min-h-screen text-white flex flex-col items-center justify-between p-4 md:p-8">
+
+    <!-- Header -->
+    <header class="w-full max-w-4xl text-center my-4">
+        <div class="inline-block bg-blue-600 text-xs font-bold uppercase tracking-widest px-3 py-1 rounded-full mb-2 shadow-lg">
+            Trò Chơi Học Tập - Hóa học 10
+        </div>
+        <h1 class="text-xl md:text-3xl font-extrabold bg-gradient-to-r from-teal-200 via-blue-200 to-purple-200 bg-clip-text text-transparent">
+            ÔN TẬP KIỂM TRA GIỮA KÌ 1 - HÓA HỌC 10 (MÃ ĐỀ 609 - THPT PHẠM VĂN SÁNG)
+        </h1>
+        <p class="text-slate-300 text-sm md:text-base mt-1">Cấu tạo nguyên tử • Hạt cơ bản & Đồng vị • Bảng tuần hoàn & Định luật tuần hoàn</p>
+    </header>
+
+    <!-- Main Container -->
+    <main class="w-full max-w-4xl bg-slate-800/80 backdrop-blur-md rounded-2xl shadow-2xl border border-slate-700 p-6 md:p-8 my-auto relative overflow-hidden">
+
+        <!-- SETUP SCREEN -->
+        <div id="setup-screen" class="space-y-6">
+            <div class="text-center">
+                <h2 class="text-2xl font-bold text-teal-400 mb-2">Chọn Chế Độ Chơi</h2>
+                <p class="text-slate-300 text-sm">Bộ đề 28 câu chuẩn ma trận: Trắc nghiệm 4 lựa chọn & Bài tập tính toán có hướng dẫn giải chi tiết!</p>
+            </div>
+
+            <!-- Mode Selector Buttons -->
+            <div class="flex justify-center space-x-4">
+                <button id="btn-mode-group" onclick="setGameMode('group')" class="px-6 py-2.5 rounded-xl font-bold text-sm bg-blue-600 text-white shadow-lg transition flex items-center space-x-2">
+                    <i class="fa-solid fa-users"></i> <span>Đấu Đội / Nhiều Người</span>
+                </button>
+                <button id="btn-mode-single" onclick="setGameMode('single')" class="px-6 py-2.5 rounded-xl font-bold text-sm bg-slate-700 text-slate-300 shadow-lg transition flex items-center space-x-2">
+                    <i class="fa-solid fa-user-graduate"></i> <span>Kiểm Tra Cá Nhân (Đấu đơn)</span>
+                </button>
+            </div>
+
+            <div class="bg-slate-900/60 p-4 rounded-xl border border-slate-700 space-y-4 max-w-md mx-auto">
+                <h3 id="setup-subtitle" class="text-center font-semibold text-teal-300 text-sm">Thiết lập thông tin các đội chơi</h3>
+                <div id="participant-inputs" class="space-y-3">
+                    <div class="flex items-center space-x-2">
+                        <span class="bg-blue-600 w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm shrink-0">1</span>
+                        <input type="text" value="Đội 1" class="participant-input w-full bg-slate-900 border border-slate-600 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-blue-500 font-semibold text-sm" placeholder="Nhập tên...">
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        <span class="bg-purple-600 w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm shrink-0">2</span>
+                        <input type="text" value="Đội 2" class="participant-input w-full bg-slate-900 border border-slate-600 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-purple-500 font-semibold text-sm" placeholder="Nhập tên...">
+                    </div>
+                </div>
+
+                <div id="add-team-box" class="flex justify-center pt-2">
+                    <button onclick="addParticipantInput()" class="bg-slate-700 hover:bg-slate-600 text-white px-4 py-2 rounded-lg font-semibold text-xs transition flex items-center space-x-1">
+                        <i class="fa-solid fa-plus"></i> <span id="add-btn-text">Thêm đội</span>
+                    </button>
+                </div>
+            </div>
+
+            <div class="text-center pt-2">
+                <button onclick="startGame()" class="bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white font-bold text-lg px-8 py-3 rounded-xl shadow-lg transform transition hover:scale-105">
+                    Bắt Đầu Ôn Tập Ngay!
+                </button>
+            </div>
+        </div>
+
+        <!-- GAMEPLAY SCREEN -->
+        <div id="game-screen" class="hidden space-y-6">
+            <div class="flex flex-wrap justify-between items-center bg-slate-900/60 p-4 rounded-xl border border-slate-700">
+                <div class="flex items-center space-x-3 mb-2 sm:mb-0">
+                    <span id="turn-label" class="text-xs uppercase tracking-wider text-slate-400">Thí sinh:</span>
+                    <span id="current-participant-badge" class="bg-blue-600 text-white font-bold px-3 py-1 rounded-full text-sm shadow">Bạn</span>
+                </div>
+                <div class="text-sm font-semibold text-teal-300">
+                    Câu hỏi <span id="current-q-num">1</span> / <span id="total-q-num">0</span>
+                </div>
+                <div class="flex items-center space-x-2 text-slate-400 font-medium text-xs sm:text-sm">
+                    <i class="fa-regular fa-clock text-teal-400"></i>
+                    <span>Tự do làm bài</span>
+                </div>
+            </div>
+
+            <div id="scoreboard-mini" class="grid grid-cols-2 sm:grid-cols-4 gap-2 text-center"></div>
+
+            <div class="bg-slate-900/80 p-6 rounded-2xl border border-slate-700 shadow-inner">
+                <div id="question-badge" class="inline-block text-xs font-bold uppercase tracking-wider px-2.5 py-1 rounded bg-teal-800 text-teal-200 mb-2"></div>
+                <div id="question-text" class="text-lg md:text-xl font-bold text-white leading-relaxed"></div>
+            </div>
+
+            <div id="options-container" class="space-y-4"></div>
+        </div>
+
+        <!-- FEEDBACK SCREEN -->
+        <div id="feedback-screen" class="hidden space-y-6 text-center py-4">
+            <div id="feedback-icon" class="text-6xl mb-2"></div>
+            <h3 id="feedback-title" class="text-2xl font-bold"></h3>
+            <div class="bg-slate-900 p-4 rounded-xl border border-slate-700 text-left max-w-2xl mx-auto">
+                <p class="text-xs font-bold text-slate-400 uppercase mb-1">Hướng dẫn giải thích đáp án:</p>
+                <div id="feedback-rationale" class="text-slate-200 text-sm md:text-base leading-relaxed"></div>
+            </div>
+            <div>
+                <button onclick="nextQuestion()" class="bg-blue-600 hover:bg-blue-700 text-white font-bold px-8 py-3 rounded-xl shadow-lg transition transform hover:scale-105">
+                    Tiếp Tục <i class="fa-solid fa-arrow-right ml-2"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- END GAME SCREEN -->
+        <div id="end-screen" class="hidden space-y-6 text-center py-6">
+            <div class="text-6xl text-yellow-400 mb-2">
+                <i class="fa-solid fa-trophy animate-bounce"></i>
+            </div>
+            <h2 class="text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-yellow-300 to-amber-500">
+                KẾT QUẢ BÀI THI TỔNG HỢP
+            </h2>
+            <p id="end-subtitle" class="text-slate-300">Đã hoàn thành toàn bộ câu hỏi!</p>
+
+            <div id="final-scoreboard" class="max-w-md mx-auto space-y-3"></div>
+
+            <div class="pt-4">
+                <button onclick="restartGame()" class="bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white font-bold px-8 py-3 rounded-xl shadow-lg transition transform hover:scale-105">
+                    Làm Lại Từ Đầu
+                </button>
+            </div>
+        </div>
+
+    </main>
+
+    <footer class="w-full max-w-4xl text-center text-xs text-slate-400 my-2">
+        Trò chơi học tập Hóa học 10 - Ôn tập Kiểm tra Giữa kì 1 (THPT Phạm Văn Sáng - Mã đề 609)
+    </footer>
+
+    <script>
+        // Web Audio API
+        let audioCtx = null;
+        function getAudioContext() {
+            if (!audioCtx) {
+                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            }
+            if (audioCtx.state === 'suspended') {
+                audioCtx.resume();
+            }
+            return audioCtx;
+        }
+
+        function playCorrectSound() {
+            try {
+                const ctx = getAudioContext();
+                const now = ctx.currentTime;
+                const notes = [523.25, 659.25, 783.99]; // C5 - E5 - G5
+                notes.forEach((freq, index) => {
+                    const osc = ctx.createOscillator();
+                    const gain = ctx.createGain();
+                    osc.type = 'triangle';
+                    osc.frequency.setValueAtTime(freq, now + index * 0.1);
+                    gain.gain.setValueAtTime(0.18, now + index * 0.1);
+                    gain.gain.exponentialRampToValueAtTime(0.001, now + index * 0.1 + 0.28);
+                    osc.connect(gain);
+                    gain.connect(ctx.destination);
+                    osc.start(now + index * 0.1);
+                    osc.stop(now + index * 0.1 + 0.28);
+                });
+            } catch (e) {}
+        }
+
+        function playIncorrectSound() {
+            try {
+                const ctx = getAudioContext();
+                const now = ctx.currentTime;
+                const freqs = [174.61, 138.59]; // F3 -> C#3
+                freqs.forEach((freq, index) => {
+                    const osc = ctx.createOscillator();
+                    const gain = ctx.createGain();
+                    osc.type = 'sawtooth';
+                    osc.frequency.setValueAtTime(freq, now + index * 0.15);
+                    gain.gain.setValueAtTime(0.2, now + index * 0.15);
+                    gain.gain.exponentialRampToValueAtTime(0.001, now + index * 0.15 + 0.25);
+                    osc.connect(gain);
+                    gain.connect(ctx.destination);
+                    osc.start(now + index * 0.15);
+                    osc.stop(now + index * 0.15 + 0.25);
+                });
+            } catch (e) {}
+        }
+
+        function renderMath(container) {
+            if (window.renderMathInElement && container) {
+                renderMathInElement(container, {
+                    delimiters: [
+                        { left: "$$", right: "$$", display: true },
+                        { left: "$", right: "$", display: false },
+                        { left: "\\(", right: "\\)", display: false },
+                        { left: "\\[", right: "\\]", display: true }
+                    ],
+                    throwOnError: false
+                });
+            }
+        }
+
+        // BỘ CÂU HỎI THEO TÀI LIỆU 10KTGK1_PVS (MÃ ĐỀ 609 - THPT PHẠM VĂN SÁNG)
+        const originalQuestions = [
+            // ==================== PHẦN I: TRẮC NGHIỆM 4 LỰA CHỌN (24 CÂU) ====================
+            {
+                type: 'mcq', level: 'NB', lesson: 'Phần I: Trắc nghiệm khách quan',
+                question: 'Câu 1. Nguyên tử trung hòa về điện vì:',
+                options: [
+                    { text: 'A. số proton bằng số khối.', isCorrect: false },
+                    { text: 'B. số proton bằng số electron.', isCorrect: true },
+                    { text: 'C. số neutron bằng số proton.', isCorrect: false },
+                    { text: 'D. số neutron bằng số electron.', isCorrect: false }
+                ],
+                rationale: 'Proton mang điện tích dương ($+1$), electron mang điện tích âm ($-1$). Nguyên tử trung hòa về điện khi số hạt proton bằng số hạt electron ($p = e$).'
+            },
+            {
+                type: 'mcq', level: 'NB', lesson: 'Phần I: Trắc nghiệm khách quan',
+                question: 'Câu 2. Ô nguyên tố trong bảng tuần hoàn KHÔNG cho biết thông tin nào sau đây?',
+                options: [
+                    { text: 'A. Kí hiệu nguyên tố.', isCorrect: false },
+                    { text: 'B. Tên nguyên tố.', isCorrect: false },
+                    { text: 'C. Số khối của hạt nhân.', isCorrect: true },
+                    { text: 'D. Số hiệu nguyên tử.', isCorrect: false }
+                ],
+                rationale: 'Ô nguyên tố cung cấp: kí hiệu, tên nguyên tố, số hiệu nguyên tử ($Z$), nguyên tử khối trung bình, độ âm điện, cấu hình electron... Không cho biết số khối $A$ của một đồng vị cụ thể.'
+            },
+            {
+                type: 'mcq', level: 'NB', lesson: 'Phần I: Trắc nghiệm khách quan',
+                question: 'Câu 3. Chu kì là dãy các nguyên tố được sắp xếp theo chiều điện tích hạt nhân tăng dần, nguyên tử của chúng có cùng:',
+                options: [
+                    { text: 'A. Số lớp electron.', isCorrect: true },
+                    { text: 'B. Số electron ở lớp ngoài cùng.', isCorrect: false },
+                    { text: 'C. Số electron hóa trị.', isCorrect: false },
+                    { text: 'D. Số electron.', isCorrect: false }
+                ],
+                rationale: 'Chu kì là dãy các nguyên tố mà nguyên tử của chúng có cùng số lớp electron, được xếp theo chiều điện tích hạt nhân tăng dần.'
+            },
+            {
+                type: 'mcq', level: 'TH', lesson: 'Phần I: Trắc nghiệm khách quan',
+                question: 'Câu 4. Cho các nguyên tử: $^{16}_{8}\\text{X}$; $^{28}_{14}\\text{Y}$; $^{12}_{6}\\text{Z}$; $^{28}_{14}\\text{T}$. Các nguyên tử nào là đồng vị của cùng một nguyên tố hoá học?',
+                options: [
+                    { text: 'A. T và Y.', isCorrect: true },
+                    { text: 'B. Z và Y.', isCorrect: false },
+                    { text: 'C. X và Z.', isCorrect: false },
+                    { text: 'D. X và T.', isCorrect: false }
+                ],
+                rationale: 'Đồng vị là những nguyên tử có cùng số proton ($Z$). Ở đây, cả hai nguyên tử $\\text{Y}$ và $\\text{T}$ đều có số hiệu nguyên tử $Z = 14$.'
+            },
+            {
+                type: 'mcq', level: 'NB', lesson: 'Phần I: Trắc nghiệm khách quan',
+                question: 'Câu 5. Nguyên tố $\\text{O}\\,(Z = 8)$ có số electron hóa trị là:',
+                options: [
+                    { text: 'A. $6$.', isCorrect: true },
+                    { text: 'B. $5$.', isCorrect: false },
+                    { text: 'C. $7$.', isCorrect: false },
+                    { text: 'D. $4$.', isCorrect: false }
+                ],
+                rationale: 'Cấu hình electron của $\\text{O}\\,(Z = 8)$: $1s^2 2s^2 2p^4$. Lớp ngoài cùng ($n = 2$) có $2 + 4 = 6$ electron. Đối với nguyên tố nhóm A, số electron hóa trị bằng số electron lớp ngoài cùng.'
+            },
+            {
+                type: 'mcq', level: 'NB', lesson: 'Phần I: Trắc nghiệm khách quan',
+                question: 'Câu 6. Trong bảng tuần hoàn, các nguyên tố hóa học được sắp xếp theo ba nguyên tắc, nguyên tắc nào sau đây là ĐÚNG?',
+                options: [
+                    { text: 'A. Cùng số lớp electron xếp cùng một cột.', isCorrect: false },
+                    { text: 'B. Nguyên tử khối tăng dần.', isCorrect: false },
+                    { text: 'C. Điện tích hạt nhân tăng dần.', isCorrect: true },
+                    { text: 'D. Cùng số electron hóa trị xếp cùng hàng.', isCorrect: false }
+                ],
+                rationale: 'Nguyên tắc cơ bản nhất: các nguyên tố được sắp xếp theo chiều tăng dần của điện tích hạt nhân nguyên tử.'
+            },
+            {
+                type: 'mcq', level: 'NB', lesson: 'Phần I: Trắc nghiệm khách quan',
+                question: 'Câu 7. Các nguyên tử được gọi là đồng vị của cùng một nguyên tố khi chúng có cùng:',
+                options: [
+                    { text: 'A. số electron và số neutron.', isCorrect: false },
+                    { text: 'B. số neutron.', isCorrect: false },
+                    { text: 'C. số khối.', isCorrect: false },
+                    { text: 'D. số proton và khác số neutron.', isCorrect: true }
+                ],
+                rationale: 'Theo định nghĩa chuẩn, đồng vị là những nguyên tử có cùng số proton nhưng khác nhau về số neutron.'
+            },
+            {
+                type: 'mcq', level: 'NB', lesson: 'Phần I: Trắc nghiệm khách quan',
+                question: 'Câu 8. Số hiệu nguyên tử $Z$ cho biết thông tin nào sau đây?',
+                options: [
+                    { text: 'A. số proton trong hạt nhân.', isCorrect: true },
+                    { text: 'B. số electron lớp ngoài cùng.', isCorrect: false },
+                    { text: 'C. số khối của nguyên tử.', isCorrect: false },
+                    { text: 'D. số neutron trong hạt nhân.', isCorrect: false }
+                ],
+                rationale: 'Số hiệu nguyên tử $Z$ bằng số đơn vị điện tích hạt nhân, bằng số proton trong hạt nhân (và bằng số electron trong nguyên tử trung hòa).'
+            },
+            {
+                type: 'mcq', level: 'TH', lesson: 'Phần I: Trắc nghiệm khách quan',
+                question: 'Câu 9. Trong một chu kì, theo chiều tăng của điện tích hạt nhân nguyên tử:',
+                options: [
+                    { text: 'A. tính kim loại và tính phi kim đều tăng.', isCorrect: false },
+                    { text: 'B. tính kim loại và tính phi kim đều giảm.', isCorrect: false },
+                    { text: 'C. tính kim loại tăng, tính phi kim giảm.', isCorrect: false },
+                    { text: 'D. tính kim loại giảm, tính phi kim tăng.', isCorrect: true }
+                ],
+                rationale: 'Trong một chu kì, đi từ trái sang phải theo chiều tăng dần của điện tích hạt nhân, bán kính nguyên tử giảm, độ âm điện tăng nên tính kim loại giảm dần và tính phi kim tăng dần.'
+            },
+            {
+                type: 'mcq', level: 'VD', lesson: 'Phần I: Trắc nghiệm khách quan',
+                question: 'Câu 10. Chlorine có hai đồng vị bền $^{35}\\text{Cl}$ và $^{37}\\text{Cl}$ có tỉ lệ phần trăm số nguyên tử lần lượt là $75,76\\%$ và $24,24\\%$. Nguyên tử khối trung bình (theo $\\text{amu}$) của chlorine là:',
+                options: [
+                    { text: 'A. $35,52$.', isCorrect: false },
+                    { text: 'B. $35,48$.', isCorrect: true },
+                    { text: 'C. $35,25$.', isCorrect: false },
+                    { text: 'D. $35,84$.', isCorrect: false }
+                ],
+                rationale: '$\\overline{A}_{\\text{Cl}} = \\dfrac{35 \\times 75,76 + 37 \\times 24,24}{100} = \\dfrac{2651,6 + 896,88}{100} = 35,4848 \\approx 35,48\\text{ amu}$.'
+            },
+            {
+                type: 'mcq', level: 'TH', lesson: 'Phần I: Trắc nghiệm khách quan',
+                question: 'Câu 11. Nguyên tử copper (Cu) có $29$ proton trong hạt nhân. Cho các phát biểu sau về copper:<br>' +
+                          '(1) Copper có $29$ neutron trong hạt nhân.<br>' +
+                          '(2) Copper có $29$ electron ở vỏ nguyên tử.<br>' +
+                          '(3) Copper có điện tích hạt nhân là $+29$.<br>' +
+                          '(4) Khối lượng nguyên tử của Copper là $29\\text{ amu}$.<br>' +
+                          'Số phát biểu ĐÚNG là:',
+                options: [
+                    { text: 'A. $3$.', isCorrect: false },
+                    { text: 'B. $4$.', isCorrect: false },
+                    { text: 'C. $2$.', isCorrect: true },
+                    { text: 'D. $1$.', isCorrect: false }
+                ],
+                rationale: 'Có 2 phát biểu đúng là (2) và (3).<br>- Phát biểu (1) sai vì Cu có số neutron là 34 hoặc 36 ($A = 63$ hoặc $65$).<br>- Phát biểu (4) sai vì khối lượng nguyên tử của Cu xấp xỉ $63,55\\text{ amu}$.'
+            },
+            {
+                type: 'mcq', level: 'NB', lesson: 'Phần I: Trắc nghiệm khách quan',
+                question: 'Câu 12. Sự phân bố electron vào các lớp và phân lớp căn cứ vào yếu tố nào?',
+                options: [
+                    { text: 'A. mức năng lượng electron.', isCorrect: true },
+                    { text: 'B. điện tích hạt nhân tăng dần.', isCorrect: false },
+                    { text: 'C. số khối tăng dần.', isCorrect: false },
+                    { text: 'D. nguyên tử khối tăng dần.', isCorrect: false }
+                ],
+                rationale: 'Các electron được phân bố vào các lớp và phân lớp theo thứ tự mức năng lượng tăng dần (nguyên lí vững bền).'
+            },
+            {
+                type: 'mcq', level: 'TH', lesson: 'Phần I: Trắc nghiệm khách quan',
+                question: 'Câu 13. Nguyên tố X có $Z = 17$. Các electron lớp ngoài cùng của nguyên tử nguyên tố X thuộc lớp nào?',
+                options: [
+                    { text: 'A. Lớp N', isCorrect: false },
+                    { text: 'B. Lớp L', isCorrect: false },
+                    { text: 'C. Lớp K', isCorrect: false },
+                    { text: 'D. Lớp M', isCorrect: true }
+                ],
+                rationale: 'Cấu hình electron của X ($Z = 17$): $1s^2 2s^2 2p^6 3s^2 3p^5$. Lớp ngoài cùng là lớp thứ 3 ($n = 3$), tương ứng với lớp M (lớp 1: K, lớp 2: L, lớp 3: M).'
+            },
+            {
+                type: 'mcq', level: 'TH', lesson: 'Phần I: Trắc nghiệm khách quan',
+                question: 'Câu 14. Vị trí của nguyên tố có $Z = 15$ trong bảng tuần hoàn là:',
+                options: [
+                    { text: 'A. Chu kì 3, nhóm VA.', isCorrect: true },
+                    { text: 'B. Chu kì 4, nhóm VIB.', isCorrect: false },
+                    { text: 'C. Chu kì 4, nhóm IIA.', isCorrect: false },
+                    { text: 'D. Chu kì 3, nhóm IIB.', isCorrect: false }
+                ],
+                rationale: 'Cấu hình electron ($Z = 15$): $1s^2 2s^2 2p^6 3s^2 3p^3$. Có 3 lớp electron $\\implies$ Chu kì 3; có 5 electron lớp ngoài cùng (nguyên tố p) $\\implies$ Nhóm VA (Phosphorus).'
+            },
+            {
+                type: 'mcq', level: 'TH', lesson: 'Phần I: Trắc nghiệm khách quan',
+                question: 'Câu 15. Cho cấu hình electron nguyên tử $\\text{X}: 1s^2 2s^2 2p^3$. Số electron độc thân của nguyên tử X là:',
+                options: [
+                    { text: 'A. $1$.', isCorrect: false },
+                    { text: 'B. $2$.', isCorrect: false },
+                    { text: 'C. $3$.', isCorrect: true },
+                    { text: 'D. $4$.', isCorrect: false }
+                ],
+                rationale: 'Phân lớp $2p^3$ có 3 electron phân bố đều vào 3 orbital p riêng biệt theo quy tắc Hund, do đó có đúng 3 electron độc thân.'
+            },
+            {
+                type: 'mcq', level: 'TH', lesson: 'Phần I: Trắc nghiệm khách quan',
+                question: 'Câu 16. Nguyên tử của nguyên tố X có bán kính rất lớn. Phát biểu nào sau đây về X là ĐÚNG?',
+                options: [
+                    { text: 'A. Độ âm điện của X rất nhỏ và X là kim loại.', isCorrect: true },
+                    { text: 'B. Độ âm điện của X rất nhỏ và X là phi kim.', isCorrect: false },
+                    { text: 'C. Độ âm điện của X rất lớn và X là kim loại.', isCorrect: false },
+                    { text: 'D. Độ âm điện của X rất lớn và X là phi kim.', isCorrect: false }
+                ],
+                rationale: 'Bán kính nguyên tử lớn làm lực hút của hạt nhân với electron hóa trị yếu, khả năng hút electron kém (độ âm điện nhỏ) và dễ nhường electron (tính kim loại).'
+            },
+            {
+                type: 'mcq', level: 'NB', lesson: 'Phần I: Trắc nghiệm khách quan',
+                question: 'Câu 17. Orbital nguyên tử (AO) là:',
+                options: [
+                    { text: 'A. khu vực không gian xung quanh hạt nhân mà xác suất có mặt electron lớn nhất.', isCorrect: true },
+                    { text: 'B. quỹ đạo chuyển động xác định của electron.', isCorrect: false },
+                    { text: 'C. một đường tròn bao quanh hạt nhân.', isCorrect: false },
+                    { text: 'D. một lớp electron chứa tối đa 2 electron.', isCorrect: false }
+                ],
+                rationale: 'Theo mô hình hiện đại, orbital nguyên tử là khu vực không gian xung quanh hạt nhân mà xác suất tìm thấy electron tại đó là lớn nhất (khoảng 90%).'
+            },
+            {
+                type: 'mcq', level: 'TH', lesson: 'Phần I: Trắc nghiệm khách quan',
+                question: 'Câu 18. Cho các nguyên tố X, Y, Z có số hiệu nguyên tử lần lượt là $6, 9, 14$. Thứ tự tính phi kim tăng dần của các nguyên tố đó là:',
+                options: [
+                    { text: 'A. $\\text{X} < \\text{Z} < \\text{Y}.$', isCorrect: false },
+                    { text: 'B. $\\text{Y} < \\text{X} < \\text{Z}.$', isCorrect: false },
+                    { text: 'C. $\\text{Z} < \\text{X} < \\text{Y}.$', isCorrect: true },
+                    { text: 'D. $\\text{Z} < \\text{Y} < \\text{X}.$', isCorrect: false }
+                ],
+                rationale: '$\\text{X}\\,(Z=6,\\text{ C})$, $\\text{Y}\\,(Z=9,\\text{ F})$, $\\text{Z}\\,(Z=14,\\text{ Si})$.<br>- Trong nhóm IVA: tính phi kim giảm từ trên xuống $\\implies \\text{Si} < \\text{C} \\implies \\text{Z} < \\text{X}$.<br>- Trong chu kì 2: tính phi kim tăng từ trái qua phải $\\implies \\text{C} < \\text{F} \\implies \\text{X} < \\text{Y}$.<br>Thứ tự tăng dần: $\\mathbf{Z < X < Y}$.'
+            },
+            {
+                type: 'mcq', level: 'NB', lesson: 'Phần I: Trắc nghiệm khách quan',
+                question: 'Câu 19. Cấu hình electron hóa trị của nguyên tử các nguyên tố nhóm IIA trong bảng tuần hoàn đều là:',
+                options: [
+                    { text: 'A. $ns^2$.', isCorrect: true },
+                    { text: 'B. $ns^2 np^4$.', isCorrect: false },
+                    { text: 'C. $np^2$.', isCorrect: false },
+                    { text: 'D. $ns^2 np^2$.', isCorrect: false }
+                ],
+                rationale: 'Các nguyên tố nhóm IIA (kim loại kiềm thổ) đều có 2 electron hóa trị ở phân lớp s lớp ngoài cùng: $ns^2$.'
+            },
+            {
+                type: 'mcq', level: 'NB', lesson: 'Phần I: Trắc nghiệm khách quan',
+                question: 'Câu 20. Phát biểu nào sau đây KHÔNG CHÍNH XÁC?',
+                options: [
+                    { text: 'A. Hạt nhân nguyên tử thường được tạo bởi proton và neutron.', isCorrect: false },
+                    { text: 'B. Tất cả các nguyên tử đều chứa đủ 3 loại hạt cơ bản proton, electron và neutron.', isCorrect: true },
+                    { text: 'C. Các nguyên tử có cấu tạo rỗng gồm hạt nhân và vỏ electron.', isCorrect: false },
+                    { text: 'D. Vỏ nguyên tử được cấu tạo bởi các electron.', isCorrect: false }
+                ],
+                rationale: 'Phát biểu B không chính xác vì đồng vị phổ biến nhất của Hydrogen ($^1_1\\text{H}$) chỉ có 1 proton và 1 electron, hạt nhân không có neutron.'
+            },
+            {
+                type: 'mcq', level: 'TH', lesson: 'Phần I: Trắc nghiệm khách quan',
+                question: 'Câu 21. Cấu hình electron của nguyên tử có $Z = 16$ (Sulfur) là:',
+                options: [
+                    { text: 'A. $1s^2 2s^2 2p^6 3s^2 3p^4$.', isCorrect: true },
+                    { text: 'B. $1s^2 2s^2 2p^6 3s^2 3p^5$.', isCorrect: false },
+                    { text: 'C. $1s^2 2s^2 2p^6 3s^2 3p^3$.', isCorrect: false },
+                    { text: 'D. $1s^2 2s^2 2p^6 3s^2 3p^6$.', isCorrect: false }
+                ],
+                rationale: 'Phân bố 16 electron theo thứ tự mức năng lượng: $1s^2 2s^2 2p^6 3s^2 3p^4$.'
+            },
+            {
+                type: 'mcq', level: 'TH', lesson: 'Phần I: Trắc nghiệm khách quan',
+                question: 'Câu 22. Số hạt không mang điện trong nguyên tử $^{35}_{17}\\text{Cl}$ bằng:',
+                options: [
+                    { text: 'A. $18$.', isCorrect: true },
+                    { text: 'B. $52$.', isCorrect: false },
+                    { text: 'C. $35$.', isCorrect: false },
+                    { text: 'D. $17$.', isCorrect: false }
+                ],
+                rationale: 'Số hạt không mang điện (neutron) $N = A - Z = 35 - 17 = 18$.'
+            },
+            {
+                type: 'mcq', level: 'TH', lesson: 'Phần I: Trắc nghiệm khách quan',
+                question: 'Câu 23. Cho các phát biểu sau:<br>' +
+                          '(1) Trong bảng tuần hoàn, các nguyên tố được sắp xếp theo chiều tăng dần của điện tích hạt nhân nguyên tử.<br>' +
+                          '(2) Các nguyên tố có cùng số lớp electron trong nguyên tử được xếp cùng một chu kì.<br>' +
+                          '(3) Trong một chu kỳ, theo chiều tăng dần điện tích hạt nhân nguyên tử, độ âm điện giảm.<br>' +
+                          '(4) Trong một nhóm A, theo chiều tăng dần điện tích hạt nhân nguyên tử, tính phi kim tăng.<br>' +
+                          'Số phát biểu ĐÚNG là:',
+                options: [
+                    { text: 'A. $1$.', isCorrect: false },
+                    { text: 'B. $3$.', isCorrect: false },
+                    { text: 'C. $4$.', isCorrect: false },
+                    { text: 'D. $2$.', isCorrect: true }
+                ],
+                rationale: 'Có 2 phát biểu đúng là (1) và (2).<br>- (3) sai vì trong 1 chu kì từ trái qua phải, độ âm điện tăng.<br>- (4) sai vì trong 1 nhóm A từ trên xuống dưới, tính phi kim giảm.'
+            },
+            {
+                type: 'mcq', level: 'NB', lesson: 'Phần I: Trắc nghiệm khách quan',
+                question: 'Câu 24. Hạt nào sau đây tạo nên lớp vỏ nguyên tử?',
+                options: [
+                    { text: 'A. Electron.', isCorrect: true },
+                    { text: 'B. Proton.', isCorrect: false },
+                    { text: 'C. Neutron.', isCorrect: false },
+                    { text: 'D. Proton và neutron.', isCorrect: false }
+                ],
+                rationale: 'Lớp vỏ nguyên tử được tạo thành từ các electron chuyển động rất nhanh trong không gian xung quanh hạt nhân.'
+            },
+
+            // ==================== PHẦN II: TỰ LUẬN CHUYỂN ĐỔI CHUẨN MA TRẬN (4 BÀI TOÁN) ====================
+            {
+                type: 'mcq', level: 'TH', lesson: 'Phần II: Tự luận - Cấu hình e & Tính chất (Câu 25)',
+                question: 'Câu 25. Cho hai nguyên tố: $\\text{X}\\,(Z = 15)$ và $\\text{Y}\\,(Z = 19)$. Khẳng định nào sau đây ĐÚNG về tính chất hóa học cơ bản của chúng?',
+                options: [
+                    { text: 'A. X là phi kim, Y là kim loại.', isCorrect: true },
+                    { text: 'B. X là kim loại, Y là phi kim.', isCorrect: false },
+                    { text: 'C. Cả X và Y đều là kim loại.', isCorrect: false },
+                    { text: 'D. Cả X và Y đều là khí hiếm.', isCorrect: false }
+                ],
+                rationale: '- X ($Z = 15$): $1s^2 2s^2 2p^6 3s^2 3p^3$, có 5 electron lớp ngoài cùng $\\implies$ phi kim.<br>- Y ($Z = 19$): $1s^2 2s^2 2p^6 3s^2 3p^6 4s^1$, có 1 electron lớp ngoài cùng $\\implies$ kim loại.'
+            },
+            {
+                type: 'mcq', level: 'TH', lesson: 'Phần II: Tự luận - So sánh bán kính & phi kim (Câu 26)',
+                question: 'Câu 26. Cho 4 nguyên tố: $\\text{P}\\,(Z=15)$, $\\text{S}\\,(Z=16)$, $\\text{O}\\,(Z=8)$, $\\text{F}\\,(Z=9)$. Dãy sắp xếp theo chiều <b>tăng dần bán kính nguyên tử</b> và <b>tăng dần tính phi kim</b> lần lượt là:',
+                options: [
+                    { text: 'A. Bán kính: F < O < S < P; Tính phi kim: P < S < O < F.', isCorrect: true },
+                    { text: 'B. Bán kính: P < S < O < F; Tính phi kim: F < O < S < P.', isCorrect: false },
+                    { text: 'C. Bán kính: O < F < P < S; Tính phi kim: S < P < F < O.', isCorrect: false },
+                    { text: 'D. Bán kính: F < O < P < S; Tính phi kim: P < S < F < O.', isCorrect: false }
+                ],
+                rationale: 'Vị trí: O ($Z=8$, CK2, VIA); F ($Z=9$, CK2, VIIA); P ($Z=15$, CK3, VA); S ($Z=16$, CK3, VIA).<br>- Bán kính nguyên tử: Chu kì 2 nhỏ hơn chu kì 3; trong cùng chu kì $R$ giảm từ trái qua phải $\\implies \\mathbf{F < O < S < P}$.<br>- Tính phi kim: $\\mathbf{P < S < O < F}$.'
+            },
+            {
+                type: 'sa', level: 'VD', lesson: 'Phần II: Tự luận - Bài toán hạt nguyên tử (Câu 27)',
+                question: 'Câu 27. Hợp kim chứa nguyên tố X nhẹ và bền, dùng chế tạo vỏ máy bay. Nguyên tử X có tổng số hạt cơ bản ($p, n, e$) là $40$; trong hạt nhân có số hạt không mang điện nhiều hơn số hạt mang điện là $1$. Hãy tìm <b>số neutron</b> của nguyên tử X.',
+                correctAnswer: '14',
+                rationale: 'Hệ phương trình ($p = e = Z$):<br>$\\begin{cases} 2Z + N = 40 \\\\ N - Z = 1 \\end{cases} \\iff \\begin{cases} 3Z + 1 = 40 \\implies Z = 13 \\\\ N = 14 \\end{cases}$<br>Vậy nguyên tử X có $13$ electron và $14$ neutron (X là Nhôm - $\\text{Al}$).'
+            },
+            {
+                type: 'sa', level: 'VDC', lesson: 'Phần II: Tự luận - Khối lượng đồng vị trong hợp chất (Câu 28)',
+                question: 'Câu 28. Trong tự nhiên, $\\text{Fe}$ gồm 4 đồng vị: $^{54}\\text{Fe}\\,(5,8\\%)$, $^{56}\\text{Fe}\\,(91,72\\%)$, $^{57}\\text{Fe}\\,(2,2\\%)$, $^{58}\\text{Fe}\\,(0,28\\%)$; nguyên tố $\\text{Br}$ gồm 2 đồng vị: $^{79}\\text{Br}\\,(50,69\\%)$ và $^{81}\\text{Br}\\,(49,31\\%)$. Phần trăm khối lượng $(\\%)$ của đồng vị $^{56}\\text{Fe}$ có trong hợp chất $\\text{FeBr}_3$ là bao nhiêu? (Nhập kết quả làm tròn đến hai chữ số thập phân dùng dấu phẩy, ví dụ: 17,36):',
+                correctAnswer: '17,36',
+                rationale: '1. $\\overline{A}_{\\text{Fe}} = \\dfrac{54 \\times 5,8 + 56 \\times 91,72 + 57 \\times 2,2 + 58 \\times 0,28}{100} = 55,9116\\text{ amu}$.<br>' +
+                          '2. $\\overline{A}_{\\text{Br}} = \\dfrac{79 \\times 50,69 + 81 \\times 49,31}{100} = 79,9862\\text{ amu}$.<br>' +
+                          '3. $M_{\\text{FeBr}_3} = 55,9116 + 3 \\times 79,9862 = 295,8702\\text{ g/mol}$.<br>' +
+                          '4. Trong 1 mol $\\text{FeBr}_3$, khối lượng đồng vị $^{56}\\text{Fe}$ là: $m(^{56}\\text{Fe}) = 56 \\times 91,72\\% = 51,3632\\text{ g}$.<br>' +
+                          '5. $\\%m(^{56}\\text{Fe}) = \\dfrac{51,3632}{295,8702} \\times 100\\% \\approx 17,36\\%$.'
+            }
+        ];
+
+        let questions = [];
+        let participants = [];
+        let gameMode = 'group';
+        let currentIndex = 0;
+        let currentQuestionIndex = 0;
+
+        function setGameMode(mode) {
+            gameMode = mode;
+            const btnGroup = document.getElementById('btn-mode-group');
+            const btnSingle = document.getElementById('btn-mode-single');
+            const subtitle = document.getElementById('setup-subtitle');
+            const container = document.getElementById('participant-inputs');
+            const addTeamBox = document.getElementById('add-team-box');
+
+            if (mode === 'group') {
+                btnGroup.className = "px-6 py-2.5 rounded-xl font-bold text-sm bg-blue-600 text-white shadow-lg transition flex items-center space-x-2";
+                btnSingle.className = "px-6 py-2.5 rounded-xl font-bold text-sm bg-slate-700 text-slate-300 shadow-lg transition flex items-center space-x-2";
+                subtitle.innerText = "Thiết lập thông tin các đội chơi";
+                addTeamBox.style.display = 'flex';
+                container.innerHTML = `
+                    <div class="flex items-center space-x-2">
+                        <span class="bg-blue-600 w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm shrink-0">1</span>
+                        <input type="text" value="Đội 1" class="participant-input w-full bg-slate-900 border border-slate-600 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-blue-500 font-semibold text-sm" placeholder="Nhập tên...">
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        <span class="bg-purple-600 w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm shrink-0">2</span>
+                        <input type="text" value="Đội 2" class="participant-input w-full bg-slate-900 border border-slate-600 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-purple-500 font-semibold text-sm" placeholder="Nhập tên...">
+                    </div>
+                `;
+            } else {
+                btnSingle.className = "px-6 py-2.5 rounded-xl font-bold text-sm bg-teal-600 text-white shadow-lg transition flex items-center space-x-2";
+                btnGroup.className = "px-6 py-2.5 rounded-xl font-bold text-sm bg-slate-700 text-slate-300 shadow-lg transition flex items-center space-x-2";
+                subtitle.innerText = "Nhập họ và tên học sinh làm bài";
+                addTeamBox.style.display = 'none';
+                container.innerHTML = `
+                    <div class="flex items-center space-x-2">
+                        <span class="bg-teal-600 w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm shrink-0"><i class="fa-solid fa-user"></i></span>
+                        <input type="text" value="Học sinh" class="participant-input w-full bg-slate-900 border border-slate-600 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-teal-500 font-semibold text-sm" placeholder="Họ và tên của bạn...">
+                    </div>
+                `;
+            }
+        }
+
+        function addParticipantInput() {
+            const container = document.getElementById('participant-inputs');
+            const count = container.children.length + 1;
+            const div = document.createElement('div');
+            div.className = 'flex items-center space-x-2';
+            const colorClass = count % 2 === 0 ? 'bg-purple-600' : 'bg-blue-600';
+            div.innerHTML = `
+                <span class="${colorClass} w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm shrink-0">${count}</span>
+                <input type="text" value="Đội ${count}" class="participant-input w-full bg-slate-900 border border-slate-600 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-blue-500 font-semibold text-sm" placeholder="Nhập tên...">
+                <button onclick="this.parentElement.remove()" class="text-red-400 hover:text-red-300 px-2"><i class="fa-solid fa-trash"></i></button>
+            `;
+            container.appendChild(div);
+        }
+
+        function startGame() {
+            getAudioContext();
+
+            const inputs = document.querySelectorAll('.participant-input');
+            participants = [];
+            inputs.forEach((input, index) => {
+                const name = input.value.trim() || (gameMode === 'group' ? `Đội ${index + 1}` : `Học sinh`);
+                participants.push({ name: name, score: 0, correctCount: 0 });
+            });
+
+            if (participants.length === 0) {
+                return;
+            }
+
+            questions = [...originalQuestions].sort(() => Math.random() - 0.5);
+
+            document.getElementById('setup-screen').classList.add('hidden');
+            document.getElementById('game-screen').classList.remove('hidden');
+            document.getElementById('total-q-num').innerText = questions.length;
+            
+            if (gameMode === 'single') {
+                document.getElementById('turn-label').innerText = 'Học sinh:';
+            } else {
+                document.getElementById('turn-label').innerText = 'Lượt của:';
+            }
+
+            currentIndex = 0;
+            currentQuestionIndex = 0;
+            loadQuestion();
+        }
+
+        function updateScoreboardMini() {
+            const container = document.getElementById('scoreboard-mini');
+            container.innerHTML = '';
+            
+            if (gameMode === 'single') {
+                container.style.display = 'none';
+                document.getElementById('current-participant-badge').innerText = participants[0].name;
+            } else {
+                container.style.display = 'grid';
+                participants.forEach((p, idx) => {
+                    const isCurrent = idx === currentIndex;
+                    const div = document.createElement('div');
+                    div.className = `p-2 rounded-lg border ${isCurrent ? 'border-teal-400 bg-teal-950/40 pulse-glow' : 'border-slate-700 bg-slate-900/40'}`;
+                    div.innerHTML = `
+                        <div class="text-xs text-slate-300 truncate font-semibold">${p.name}</div>
+                        <div class="text-lg font-extrabold text-teal-300">${p.score} đ</div>
+                    `;
+                    container.appendChild(div);
+                });
+                document.getElementById('current-participant-badge').innerText = participants[currentIndex].name;
+            }
+        }
+
+        function loadQuestion() {
+            const q = questions[currentQuestionIndex];
+            document.getElementById('current-q-num').innerText = currentQuestionIndex + 1;
+            document.getElementById('question-text').innerHTML = q.question;
+
+            const typeText = q.type === 'mcq' ? 'Trắc nghiệm 4 lựa chọn' : q.type === 'tf' ? 'Câu hỏi Đúng / Sai' : 'Câu hỏi Trả lời ngắn';
+            document.getElementById('question-badge').innerText = `${q.lesson} • Cấp độ: ${q.level} • ${typeText}`;
+
+            updateScoreboardMini();
+
+            const optionsContainer = document.getElementById('options-container');
+            optionsContainer.innerHTML = '';
+
+            if (q.type === 'mcq') {
+                const gridDiv = document.createElement('div');
+                gridDiv.className = 'grid grid-cols-1 md:grid-cols-2 gap-4';
+
+                let currentOptions = [...q.options].sort(() => Math.random() - 0.5);
+                const letters = ['A', 'B', 'C', 'D'];
+
+                currentOptions.forEach((opt, idx) => {
+                    const cleanText = opt.text.replace(/^[A-D]\.\s*/, '');
+                    const btn = document.createElement('button');
+                    btn.className = 'bg-slate-900/90 hover:bg-slate-700 border border-slate-700 hover:border-blue-500 p-4 rounded-xl text-left transition flex items-start space-x-3 group shadow';
+                    
+                    btn.innerHTML = `
+                        <span class="bg-slate-800 text-teal-400 font-bold px-2.5 py-1 rounded-lg text-sm shrink-0">${letters[idx]}</span>
+                        <span class="text-slate-100 font-medium text-sm md:text-base my-auto">${cleanText}</span>
+                    `;
+
+                    btn.onclick = () => selectAnswer(opt.isCorrect, q.rationale);
+                    gridDiv.appendChild(btn);
+                });
+                optionsContainer.appendChild(gridDiv);
+            } else if (q.type === 'sa') {
+                const boxDiv = document.createElement('div');
+                boxDiv.className = 'max-w-md mx-auto space-y-4 pt-2 text-center';
+                boxDiv.innerHTML = `
+                    <div class="text-xs text-slate-400">Nhập đáp án (chữ số hoặc số thập phân dùng dấu phẩy/chấm) rồi nhấn Gửi:</div>
+                    <div class="flex space-x-2">
+                        <input id="sa-input" type="text" class="w-full bg-slate-900 border border-teal-500 rounded-xl px-4 py-3 text-white text-center font-bold text-lg focus:outline-none focus:ring-2 focus:ring-teal-400" placeholder="Nhập câu trả lời...">
+                        <button id="sa-submit-btn" class="bg-teal-600 hover:bg-teal-500 text-white font-bold px-6 py-3 rounded-xl shadow transition">Gửi</button>
+                    </div>
+                `;
+                optionsContainer.appendChild(boxDiv);
+
+                const inputEl = document.getElementById('sa-input');
+                const submitBtn = document.getElementById('sa-submit-btn');
+
+                const handleSaSubmit = () => {
+                    const userAns = inputEl.value.trim().toLowerCase().replace(/\s+/g, '').replace(',', '.');
+                    const targetAns = q.correctAnswer.trim().toLowerCase().replace(/\s+/g, '').replace(',', '.');
+                    const isCorrect = (userAns === targetAns);
+                    selectAnswer(isCorrect, `${q.rationale} (Đáp án chuẩn: <b>${q.correctAnswer}</b>)`);
+                };
+
+                submitBtn.onclick = handleSaSubmit;
+                inputEl.addEventListener('keyup', (e) => {
+                    if (e.key === 'Enter') handleSaSubmit();
+                });
+                setTimeout(() => inputEl.focus(), 100);
+            }
+
+            renderMath(document.getElementById('game-screen'));
+        }
+
+        function selectAnswer(isCorrect, rationaleText) {
+            document.getElementById('game-screen').classList.add('hidden');
+            const feedbackScreen = document.getElementById('feedback-screen');
+            feedbackScreen.classList.remove('hidden');
+
+            const title = document.getElementById('feedback-title');
+            const icon = document.getElementById('feedback-icon');
+            const rationale = document.getElementById('feedback-rationale');
+
+            if (isCorrect) {
+                playCorrectSound();
+                participants[currentIndex].score += 10;
+                participants[currentIndex].correctCount++;
+                icon.innerHTML = '<i class="fa-solid fa-circle-check text-emerald-400"></i>';
+                title.innerText = gameMode === 'single' ? "Chính Xác! (+10 điểm)" : `${participants[currentIndex].name} Trả Lời Chính Xác! (+10 điểm)`;
+                title.className = "text-2xl font-bold text-emerald-400";
+            } else {
+                playIncorrectSound();
+                if (gameMode === 'group') {
+                    participants[currentIndex].score = Math.max(0, participants[currentIndex].score - 5);
+                }
+                icon.innerHTML = '<i class="fa-solid fa-circle-xmark text-red-400"></i>';
+                title.innerText = gameMode === 'single' ? "Chưa Chính Xác!" : `${participants[currentIndex].name} Chưa Chính Xác! (-5 điểm)`;
+                title.className = "text-2xl font-bold text-red-400";
+            }
+
+            rationale.innerHTML = rationaleText;
+            renderMath(feedbackScreen);
+        }
+
+        function nextQuestion() {
+            if (gameMode === 'group') {
+                currentIndex = (currentIndex + 1) % participants.length;
+            }
+            currentQuestionIndex++;
+
+            if (currentQuestionIndex < questions.length) {
+                document.getElementById('feedback-screen').classList.add('hidden');
+                document.getElementById('game-screen').classList.remove('hidden');
+                loadQuestion();
+            } else {
+                endGame();
+            }
+        }
+
+        function endGame() {
+            document.getElementById('feedback-screen').classList.add('hidden');
+            document.getElementById('end-screen').classList.remove('hidden');
+
+            const container = document.getElementById('final-scoreboard');
+            container.innerHTML = '';
+
+            if (gameMode === 'single') {
+                const student = participants[0];
+                document.getElementById('end-subtitle').innerText = `Học sinh: ${student.name}`;
+                
+                const score10 = ((student.correctCount / questions.length) * 10).toFixed(1);
+
+                const div = document.createElement('div');
+                div.className = 'bg-slate-900 border border-teal-500 p-6 rounded-2xl space-y-3 text-center';
+                div.innerHTML = `
+                    <div class="text-slate-400 text-sm">Tổng số câu đúng: <b class="text-white">${student.correctCount} / ${questions.length}</b></div>
+                    <div class="text-4xl font-extrabold text-teal-300">${score10} <span class="text-xl font-bold text-slate-300">/ 10 Điểm</span></div>
+                    <div class="text-xs text-slate-400 pt-2">${Number(score10) >= 8 ? '🌟 Xuất sắc! Bạn nắm rất vững toàn diện kiến thức Giữa Học Kỳ I Hóa học 10.' : Number(score10) >= 5 ? '👍 Khá tốt! Hãy rà soát lại các bài toán hạt cơ bản và đồng vị nhé.' : '📖 Hãy ôn tập kĩ lại lý thuyết cấu tạo nguyên tử, electron và bảng tuần hoàn nhé!'}</div>
+                `;
+                container.appendChild(div);
+            } else {
+                document.getElementById('end-subtitle').innerText = "Trò chơi đã kết thúc! Tổng kết điểm số các đội chơi.";
+                const sortedList = [...participants].sort((a, b) => b.score - a.score);
+                sortedList.forEach((p, idx) => {
+                    const div = document.createElement('div');
+                    div.className = `flex justify-between items-center p-4 rounded-xl border ${idx === 0 ? 'bg-amber-500/20 border-amber-400 text-amber-300 font-bold' : 'bg-slate-900 border-slate-700 text-white'}`;
+                    div.innerHTML = `
+                        <div class="flex items-center space-x-3">
+                            <span class="w-8 h-8 rounded-full flex items-center justify-center font-bold ${idx === 0 ? 'bg-amber-500 text-slate-950' : 'bg-slate-800 text-slate-300'}">${idx + 1}</span>
+                            <span>${p.name}</span>
+                        </div>
+                        <span class="text-xl font-extrabold">${p.score} điểm</span>
+                    `;
+                    container.appendChild(div);
+                });
+            }
+
+            confetti({
+                particleCount: 160,
+                spread: 85,
+                origin: { y: 0.6 }
+            });
+        }
+
+        function restartGame() {
+            document.getElementById('end-screen').classList.add('hidden');
+            document.getElementById('setup-screen').classList.remove('hidden');
+        }
+
+        document.addEventListener("DOMContentLoaded", function() {
+            renderMath(document.body);
+        });
+    </script>
+</body>
+</html>
